@@ -5,10 +5,13 @@
   "dependencies": {
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.21.0",
     "clsx": "latest",
     "dotenv": "^8.2.0",
+    "google-protobuf": "3.6.1",
+    "grpc-web": "1.0.2",
     "jsonwebtoken": "^8.5.1",
     "next": "latest",
     "next-compose-plugins": "^2.2.1",
@@ -16,9 +19,7 @@
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "styled-components": "^5.2.1",
-    "google-protobuf": "3.6.1",
-    "grpc-web": "1.0.2"
+    "styled-components": "^5.2.1"
   },
   "scripts": {
     "dev": "next",

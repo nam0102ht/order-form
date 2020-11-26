@@ -1,4 +1,6 @@
 import { Button, 
+    Collapse, 
+    Fade, 
     FormControl,
     IconButton, 
     Input, 
@@ -13,7 +15,9 @@ import React, { useCallback, useState } from "react"
 import callAuthenticate from "../../../utils/connect"
 import generateJwtToken from "../../../utils/generate"
 import { Visibility, VisibilityOff } from "@material-ui/icons"
+import CloseIcon from '@material-ui/icons/Close'
 import { Router, useRouter } from "next/router"
+import Alert from '@material-ui/lab/Alert'
 
 
 
@@ -49,13 +53,23 @@ const ButtonCustom = styled(Button)`
     margin: 1rem;
     border: 1px solid rgba(0, 0, 0, 0.23);
 `
-
+const FadeCustom = styled(Fade)`
+    position: absolute;
+    right: -8rem;
+    bottom: -2rem;
+    left: 0px;
+    z-index: 999;
+`
 export default function FormLogin() {
     const router = useRouter()
     const [userLogin, setUserLogin] = useState({})
     const [values, setValues] = React.useState({
         showPassword: false,
     });
+    const [servity, setServity] = useState()
+    const [messRes, setMessRes] = useState()
+    const [isShow, setIsShow] = useState(false)
+    const [closeAlert, setCloseAlert] = useState(true)
 
     const onChangeHandle = useCallback((event) => {
         let user = userLogin
@@ -74,13 +88,29 @@ export default function FormLogin() {
 
     const onClickHandle = useCallback(async (event) => {
         let user = await callAuthenticate(userLogin)
+        console.log(user)
+        if(user.status == 57) {
+            setServity('warning')
+            setMessRes(user.message)
+            setIsShow(true)
+            return
+        }
+        if(user.status !== 200) {
+            setServity('error')
+            setMessRes(user.message)
+            setIsShow(true)
+            return
+        }
         localStorage.setItem("user", JSON.stringify(user))
         let userItem =  localStorage.getItem("user")
         let token = await generateJwtToken(userItem)
         localStorage.setItem("token", token)
         router.push("/")
+        setMessRes("User login success")
+        setServity('success')
+        setIsShow(true)
         event.preventDefault()
-    }, [userLogin])
+    }, [userLogin, servity, messRes, setServity, setMessRes])
 
     return (<PaperCustom>
         <FormLoginCustom>
@@ -114,9 +144,29 @@ export default function FormLogin() {
                     </InputAdornment>
                     }
                 />
+                <Link href="/register">Register account if haven't yet</Link>
+                <ButtonCustom onClick={onClickHandle}>Login</ButtonCustom>
             </FormControlCustom>
-            <Link href="/register">Register account if haven't yet</Link>
-            <ButtonCustom onClick={onClickHandle}>Login</ButtonCustom>
         </FormLoginCustom>
+        { isShow ? <FadeCustom in={closeAlert}>
+                        <Alert
+                        severity={servity}
+                        variant="filled"
+                        action={
+                            <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                                setCloseAlert(false);
+                            }}
+                            >
+                            <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                        }
+                        >
+                        {messRes}
+                        </Alert>
+                    </FadeCustom> : <></>}
     </PaperCustom>)
 }

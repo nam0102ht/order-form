@@ -36,7 +36,14 @@ export default async function callAuthenticate(userLogin) {
     };
 
     let result = await axios(config)
-    let token = result.data.data.token
-    let user = await verifyToken(token)
-    return user
+    if(result.data.status === 200) {
+        let token = result.data.data.token
+        let user = await verifyToken(token)
+        return {
+            status: 200,
+            message: "User login success",
+            ...user
+        }
+    }
+    return result.data
 }
