@@ -1,6 +1,6 @@
 import axios from "axios"
 import * as jwt from "jsonwebtoken"
-const API_AUTH = "http://localhost:5000/api/v2/auth"
+const API_USER = "http://localhost:5000/api/v2/user"
 
 const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAuSaG+AVy9ZXsIVWutzwb
@@ -21,25 +21,19 @@ Eo55yIrtBn5asQQLs7W+u3x1Y/YNeJLrrSrN05atvUP7Cc9jPJid1JqHvQgarWL8
 const verifyToken = async (token) => {
     return await jwt.verify(token, PUBLIC_KEY)
 }
-
-export default async function callAuthenticate(userLogin) {
-    var data = JSON.stringify(userLogin);
+export default async function registerUser(userForm) {
+    var data = JSON.stringify(userForm);
 
     var config = {
         method: 'post',
-        url: "http://localhost:3000/api/login",
+        url: API_USER,
+        headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'http://localhost:3000/'
+        },
         data : data
     };
+
     let result = await axios(config)
-    console.log(result.data)
-    if(result.data.status === 200) {
-        let token = result.data.data.token
-        let user = await verifyToken(token)
-        return {
-            status: 200,
-            message: "User login success",
-            ...user
-        }
-    }
     return result.data
 }

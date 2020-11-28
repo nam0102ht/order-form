@@ -8,23 +8,30 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.21.0",
+    "body-parser": "^1.19.0",
     "clsx": "latest",
+    "cookies": "^0.8.0",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "google-protobuf": "3.6.1",
     "grpc-web": "1.0.2",
+    "http-proxy": "^1.18.1",
     "jsonwebtoken": "^8.5.1",
     "next": "latest",
     "next-compose-plugins": "^2.2.1",
+    "next-cookies": "^2.0.3",
     "next-progressbar": "^1.0.0",
+    "nodemon": "^2.0.6",
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "styled-components": "^5.2.1"
+    "styled-components": "^5.2.1",
+    "universal-cookie": "^4.0.4"
   },
   "scripts": {
-    "dev": "next",
+    "dev": "nodemon server.js",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.js",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
   }
 }

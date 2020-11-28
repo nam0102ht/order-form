@@ -89,26 +89,27 @@ export default function Navigation({...props}) {
 
     useEffect(() => {
         let request = new Request();
-        let token = localStorage.getItem("token")
-        let user = localStorage.getItem("user")
+        // let cookies = new Cookies()
+        // let token = cookies.get("token") || ""
+        // let user = localStorage.getItem("user")
 
-        if(user || token) {
-            let userDecode = checkExpireIn(token)
-            let date = new Date()
-            if(date.getTime() > userDecode.exp*1000) {
-                console.log(user)
-                return
-            }
-            console.log("login")
-        }
-        request.setKey(""+new Date().getTime())
-        request.setProductid("1")
-        request.setName("Top Clothes")
-        request.setAmount(180000)
-        request.setNumber(1)
-        request.setToken(token)
+        // if(user || token) {
+        //     let userDecode = checkExpireIn(token)
+        //     let date = new Date()
+        //     if(date.getTime() > userDecode.exp*1000) {
+        //         console.log(user)
+        //         return
+        //     }
+        //     console.log("login")
+        // }
+        // request.setKey(""+new Date().getTime())
+        // request.setProductid("1")
+        // request.setName("Top Clothes")
+        // request.setAmount(180000)
+        // request.setNumber(1)
+        // request.setToken(token)
 
-        console.log(client.order)
+        // console.log(client.order)
     
         // orderFormService.order(request, {}, (err, response) => {
         //     console.log(response)

@@ -1,4 +1,5 @@
 import { Button, 
+    Fade, 
     FormControl,
     IconButton, 
     Input, 
@@ -10,9 +11,11 @@ import { Button,
 } from "@material-ui/core"
 import styled from "styled-components"
 import React, { useCallback, useState } from "react"
-import callAuthenticate from "../../../utils/connect"
-import generateJwtToken from "../../../utils/generate"
 import { Visibility, VisibilityOff } from "@material-ui/icons"
+import CloseIcon from '@material-ui/icons/Close'
+import registerUser from "../../../utils/hooks/register"
+import { useRouter } from "next/router"
+import Alert from "@material-ui/lab/Alert"
 
 
 
@@ -49,19 +52,32 @@ const ButtonCustom = styled(Button)`
     border: 1px solid rgba(0, 0, 0, 0.23);
 `
 
+const FadeCustom = styled(Fade)`
+    position: absolute;
+    right: -8rem;
+    bottom: -2rem;
+    left: 0px;
+    z-index: 999;
+`
+
 export default function FormRegister() {
-    const [userLogin, setUserLogin] = useState({})
+    const router = useRouter()
+    const [userForm, setUserForm] = useState({})
     const [values, setValues] = useState({
         showPassword: false,
         showRePassword: false
     });
+    const [servity, setServity] = useState()
+    const [messRes, setMessRes] = useState()
+    const [isShow, setIsShow] = useState(false)
+    const [closeAlert, setCloseAlert] = useState(true)
 
     const onChangeHandle = useCallback((event) => {
-        let user = userLogin
+        let user = userForm
         const {name, value} = event.target
         user[name] = value
-        setUserLogin(user)
-    }, [userLogin, setUserLogin])
+        setUserForm(user)
+    }, [userForm, setUserForm])
 
     const handleClickShowPassword = () => {
         setValues({ showRePassword: !values.showRePassword })
@@ -76,13 +92,25 @@ export default function FormRegister() {
     }
 
     const onClickHandle = useCallback(async (event) => {
-        let user = await callAuthenticate(userLogin)
-        localStorage.setItem("user", JSON.stringify(user))
-        let userItem =  localStorage.getItem("user")
-        console.log(userItem)
-        console.log(await generateJwtToken(userItem))
+        let result = await registerUser(userForm)
+        if(result.status == -1) {
+            setServity('warning')
+            setMessRes(result.message)
+            setIsShow(true)
+            return
+        }
+        if(result.status !== 200) {
+            setServity('error')
+            setMessRes(result.message)
+            setIsShow(true)
+            return
+        }
+        setMessRes("User register success")
+        setServity('success')
+        setIsShow(true)
+        router.push("/login")
         event.preventDefault();
-    }, [userLogin])
+    }, [userForm])
 
     return (<PaperCustom>
         <FormLoginCustom>
@@ -92,7 +120,7 @@ export default function FormRegister() {
                 multiline
                 placeholder="Username"
                 rowsMax={4}
-                value={userLogin.username}
+                value={userForm.username}
                 onChange={event => onChangeHandle(event)}
             />
             <FormControlCustom>
@@ -100,7 +128,7 @@ export default function FormRegister() {
                 <InputCustom
                     id="standard-adornment-password"
                     type={values.showPassword ? 'text' : 'password'}
-                    value={userLogin.password}
+                    value={userForm.password}
                     name="password"
                     onChange={event => onChangeHandle(event)}
                     rowsMax={4}
@@ -122,7 +150,7 @@ export default function FormRegister() {
                 <InputCustom
                     id="standard-adornment-repassword"
                     type={values.showRePassword ? 'text' : 'password'}
-                    value={userLogin.repassword}
+                    value={userForm.repassword}
                     name="repassword"
                     onChange={event => onChangeHandle(event)}
                     rowsMax={4}
@@ -140,21 +168,21 @@ export default function FormRegister() {
                 />
             </FormControlCustom>
             <TextStyle
-                name="firstname"
+                name="firstName"
                 label="Firstname:"
                 multiline
                 placeholder="Firstname"
                 rowsMax={4}
-                value={userLogin.firstname}
+                value={userForm.firstName}
                 onChange={event => onChangeHandle(event)}
             />
             <TextStyle
-                name="lastname"
+                name="lastName"
                 label="Lastname:"
                 multiline
                 placeholder="Lastname"
                 rowsMax={4}
-                value={userLogin.firstname}
+                value={userForm.lastName}
                 onChange={event => onChangeHandle(event)}
             />
             <TextStyle
@@ -163,7 +191,7 @@ export default function FormRegister() {
                 multiline
                 placeholder="Phone"
                 rowsMax={4}
-                value={userLogin.firstname}
+                value={userForm.phomeNumber}
                 onChange={event => onChangeHandle(event)}
             />
             <TextStyle
@@ -172,11 +200,31 @@ export default function FormRegister() {
                 multiline
                 placeholder="Email"
                 rowsMax={4}
-                value={userLogin.firstname}
+                value={userForm.email}
                 onChange={event => onChangeHandle(event)}
             />
-            <Link href="/register">If account is registered, please login</Link>
+            <Link href="/login">If account is registered, please login</Link>
             <ButtonCustom onClick={onClickHandle}>Register</ButtonCustom>
         </FormLoginCustom>
+        { isShow ? <FadeCustom in={closeAlert}>
+                        <Alert
+                        severity={servity}
+                        variant="filled"
+                        action={
+                            <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                                setCloseAlert(false);
+                            }}
+                            >
+                            <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                        }
+                        >
+                        {messRes}
+                        </Alert>
+                    </FadeCustom> : <></>}
     </PaperCustom>)
 }

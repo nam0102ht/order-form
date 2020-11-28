@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import LoginPage from '../components/body/LoginPage'
 import Navigation from '../components/header/nav/Navigation'
-
 export default function Login() {
   return (
     <div>

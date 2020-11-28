@@ -22,16 +22,21 @@ const verifyToken = async (token) => {
     return await jwt.verify(token, PUBLIC_KEY)
 }
 
-export default async function callAuthenticate(userLogin) {
-    var data = JSON.stringify(userLogin);
+export default async function getAuth(token) {
 
     var config = {
-        method: 'post',
-        url: "http://localhost:3000/api/login",
-        data : data
-    };
+        method: 'get',
+        url: API_AUTH,
+        headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'http://localhost:3000/',
+            'Authorization': token
+        },
+        withCredentials: true
+    }
+
     let result = await axios(config)
-    console.log(result.data)
+    console.log(result)
     if(result.data.status === 200) {
         let token = result.data.data.token
         let user = await verifyToken(token)

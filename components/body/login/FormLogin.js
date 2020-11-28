@@ -1,5 +1,4 @@
 import { Button, 
-    Collapse, 
     Fade, 
     FormControl,
     IconButton, 
@@ -11,15 +10,13 @@ import { Button,
     TextField
 } from "@material-ui/core"
 import styled from "styled-components"
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import callAuthenticate from "../../../utils/connect"
-import generateJwtToken from "../../../utils/generate"
 import { Visibility, VisibilityOff } from "@material-ui/icons"
 import CloseIcon from '@material-ui/icons/Close'
-import { Router, useRouter } from "next/router"
+import { useRouter } from "next/router"
 import Alert from '@material-ui/lab/Alert'
-
-
+import axios from "axios"
 
 const PaperCustom =styled(Paper)`
     width: 80%;
@@ -60,7 +57,12 @@ const FadeCustom = styled(Fade)`
     left: 0px;
     z-index: 999;
 `
-export default function FormLogin() {
+async function getInitialProps(ctx){
+	if (!process.browser) {
+    }
+	return {}
+}
+export default function FormLogin({initialLoginStatus }) {
     const router = useRouter()
     const [userLogin, setUserLogin] = useState({})
     const [values, setValues] = React.useState({
@@ -70,6 +72,26 @@ export default function FormLogin() {
     const [messRes, setMessRes] = useState()
     const [isShow, setIsShow] = useState(false)
     const [closeAlert, setCloseAlert] = useState(true)
+    const [loginStatus, setLoginStatus] = useState(initialLoginStatus || 'Loading...')
+
+    async function getLoginStatus() {
+		setLoginStatus('Loading...')
+
+		try {
+			const { email } = await axios.get('/api/proxy/me').then((response) => response.data)
+
+			setLoginStatus(`Logged in as ${email}`)
+		} catch (err) {
+			setLoginStatus('Not logged in')
+		}
+	}
+
+
+    useEffect(() => {
+		if (!initialLoginStatus) {
+			getLoginStatus()
+		}
+	}, [initialLoginStatus])
 
     const onChangeHandle = useCallback((event) => {
         let user = userLogin
@@ -87,29 +109,25 @@ export default function FormLogin() {
     }
 
     const onClickHandle = useCallback(async (event) => {
-        let user = await callAuthenticate(userLogin)
-        console.log(user)
-        if(user.status == 57) {
+        event.preventDefault()
+        let user = await axios({
+            method: 'post',
+            url: "http://localhost:3000/api/login",
+            headers: { 
+                'Content-Type': 'application/json'
+            },
+            data : JSON.stringify(userLogin)
+        })
+        if(user.data.status !== 200) {
+            setMessRes(user.data.message)
             setServity('warning')
-            setMessRes(user.message)
             setIsShow(true)
             return
         }
-        if(user.status !== 200) {
-            setServity('error')
-            setMessRes(user.message)
-            setIsShow(true)
-            return
-        }
-        localStorage.setItem("user", JSON.stringify(user))
-        let userItem =  localStorage.getItem("user")
-        let token = await generateJwtToken(userItem)
-        localStorage.setItem("token", token)
-        router.push("/")
+        // router.push("/")
         setMessRes("User login success")
         setServity('success')
         setIsShow(true)
-        event.preventDefault()
     }, [userLogin, servity, messRes, setServity, setMessRes])
 
     return (<PaperCustom>
@@ -121,7 +139,7 @@ export default function FormLogin() {
                 placeholder="Username"
                 rowsMax={4}
                 value={userLogin.username}
-                onChange={event => onChangeHandle(event)}
+                onChange={onChangeHandle}
             />
             <FormControlCustom>
                 <InputLabel htmlFor="standard-adornment-password">Password:</InputLabel>
@@ -130,7 +148,7 @@ export default function FormLogin() {
                     type={values.showPassword ? 'text' : 'password'}
                     value={userLogin.password}
                     name="password"
-                    onChange={event => onChangeHandle(event)}
+                    onChange={onChangeHandle}
                     rowsMax={4}
                     endAdornment={
                     <InputAdornment position="end">
@@ -144,7 +162,9 @@ export default function FormLogin() {
                     </InputAdornment>
                     }
                 />
-                <Link href="/register">Register account if haven't yet</Link>
+            </FormControlCustom>
+            <Link href="/register">Register account if haven't yet</Link>
+            <FormControlCustom>
                 <ButtonCustom onClick={onClickHandle}>Login</ButtonCustom>
             </FormControlCustom>
         </FormLoginCustom>
@@ -170,3 +190,4 @@ export default function FormLogin() {
                     </FadeCustom> : <></>}
     </PaperCustom>)
 }
+FormLogin.getInitialProps = getInitialProps
