@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import CollapseMenu from './CollapseMenu'
 import ListIconMenu from './ListIconMenu'
-import checkExpireIn from "../../../utils/checkExpire.js"
 import { Paper } from '@material-ui/core'
-import client from '../../../utils/connectGRPC'
-import {Request, Response} from "../../../src/pb/orderForm_pb"
 const Nav = styled.div`
     height: ${props => props.navProps.height};
     width: 100%;
@@ -88,7 +85,6 @@ export default function Navigation({...props}) {
     const [user, setUser] = useState()
 
     useEffect(() => {
-        let request = new Request();
         // let cookies = new Cookies()
         // let token = cookies.get("token") || ""
         // let user = localStorage.getItem("user")

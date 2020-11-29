@@ -3,8 +3,14 @@ syntax = "proto3";
 package orderForm;
 
 service OrderForm {
+  // Provides list product
+  rpc ListProduct (EmptyMessage) returns (Response) {}
   // Provides a value for each key request
   rpc Order (stream Request) returns (stream Response) {}
+}
+
+message EmptyMessage {
+
 }
 
 // The request message containing the key

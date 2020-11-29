@@ -1,6 +1,5 @@
-const { OrderFormClient } = require('../src/pb/orderForm_grpc_web_pb')
+import { OrderFormClient } from '../protos/orderForm_grpc_web_pb'
 
-let orderFormService = new OrderFormClient("http://0.0.0.0:5000")
-
+let orderFormService = new OrderFormClient("http://0.0.0.0:50051")
 
 export default orderFormService
