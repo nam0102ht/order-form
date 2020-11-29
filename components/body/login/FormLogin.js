@@ -96,7 +96,7 @@ export default function FormLogin({initialLoginStatus }) {
     const onChangeHandle = useCallback((event) => {
         let user = userLogin
         const {name, value} = event.target
-        user[name] = value
+        user[name] = value.replace(/([.?*+;^$[\]\\(){}|-])/g, "\\$1")
         setUserLogin(user)
     }, [userLogin, setUserLogin])
 
