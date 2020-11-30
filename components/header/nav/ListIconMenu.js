@@ -28,7 +28,7 @@ export default function ListIconMenu({...props}) {
             url: "/api/logout",
             method: "GET"
         })
-        router.push("/")
+        router.reload("")
         event.preventDefault()
     })
 

@@ -1,13 +1,31 @@
+import Axios from 'axios'
 import Head from 'next/head'
+import { useEffect, useState } from 'react'
 import LoginPage from '../components/body/LoginPage'
 import Navigation from '../components/header/nav/Navigation'
 export default function Login() {
+
+  const [user, setUser] = useState({})
+  const [show, setShow] = useState(false)
+
+  useEffect(async () => {
+    const data = await Axios.get('/api/me')
+    if(data.data.user) {
+        setUser(data.data.user)
+        setShow(true)
+        return 
+    }
+    setUser({})
+    setShow(false)
+  }, [setUser, setShow])
   return (
     <div>
       <Navigation 
         height='9em'
         backgroundColor='black'
         iconPosition='center'
+        user={user}
+        show={show}
       />
       <div className="container">
         <Head>
