@@ -1,6 +1,21 @@
+import Axios from 'axios'
 import Head from 'next/head'
+import { useCallback, useEffect, useState } from 'react'
 import Navigation from '../components/header/nav/Navigation'
 export default function Home() {
+  const [user, setUser] = useState({})
+  const [show, setShow] = useState(false)
+
+  useEffect(async () => {
+    const data = await Axios.get('/api/me')
+    if(data.data.user) {
+        setUser(data.data.user)
+        setShow(true)
+        return 
+    }
+    setUser({})
+    setShow(false)
+  }, [setUser, setShow])
 
   return (
     <div>
@@ -8,6 +23,8 @@ export default function Home() {
         height='9em'
         backgroundColor='#000'
         iconPosition='center'
+        user={user}
+        show={show}
       />
       <div className="container">
         <Head>
@@ -32,6 +49,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
             <div className="section-b">
               <div className="container">
                 {/* start */}
@@ -88,43 +106,70 @@ export default function Home() {
                 {/* end line food */}
               </div>
             </div>
-            <div className="section-c">
-              <div className="left" />
-              <div className="right">
-                <div className="content">
-                  <h2>FAASOS ELITE</h2>
-                  <p>
-                    Faasos Elite is our loyalty programme to express our gratitude to
-                    delight our power customers with prioritized delivery, facility to
-                    pay once in 15 days, surprise complimentary freebies and more.
-        </p>
-                  <div className="more">
-                    Find More <i className="fas fa-chevron-right" />
+            <div className="section-b">
+              <div className="container">
+                {/* start */}
+                <div className="card">
+                  <div className="cardwrapper">
+                    <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-1273477_8-ad36e3b.jpg?webp=true&quality=90&resize=440%2C400" alt="" />
+
+                    <h3>Easy pancakes</h3>
+                    <button className="btn btn-transparent">Read More</button>
                   </div>
                 </div>
+                <div className="card">
+                  <div className="cardwrapper">
+                    <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chicken-fajitas-2-d7172f8.jpg?webp=true&quality=90&resize=440%2C400" alt="" />
+                    <h3>Easy chicken fajitas</h3>
+                    <button className="btn btn-transparent">Read More</button>
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="cardwrapper">
+                    <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/carrot-cake-f1b3d0c.jpg?webp=true&quality=90&resize=440%2C400" alt="" />
+                    <h3>Easy carrot cake</h3>
+                    <button className="btn btn-transparent">Read More</button>
+                  </div>
+                </div>
+                {/* end line food */}
               </div>
             </div>
+
+
+
+
 
           </div>
 
         </main>
-
+        <div className="section-c">
+          <div className="left" />
+          <div className="right">
+            <div className="content">
+              <h2>FAASOS ELITE</h2>
+              <p>
+                Faasos Elite is our loyalty programme to express our gratitude to
+                delight our power customers with prioritized delivery, facility to
+                pay once in 15 days, surprise complimentary freebies and more.
+        </p>
+              <div className="more">
+                Find More <i className="fas fa-chevron-right" />
+              </div>
+            </div>
+          </div>
+        </div>
 
 
 
       </div>
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Xin chao
-          </a>
-      </footer>
+      <div className="divFooter">
+        <h2> TING TING SHOP - Thanks you for choosing us!!! </h2>
+      </div>
 
       <style jsx>{`
+
+  
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
@@ -201,7 +246,7 @@ export default function Home() {
           max-width: 800px;
           margin-top: 3rem;
         }
-
+        
         .card {
           margin: 1rem;
           flex-basis: 45%;
@@ -281,6 +326,18 @@ export default function Home() {
         
         body {
           font-family: "Ubuntu", sans-serif;
+        }
+
+ 
+        
+        .divFooter {
+          margin-top: 30px;
+          background-color: black;
+          color: white;
+          height: 30px;
+          display: flex;
+          justify-content: center;
+          align-item: center;
         }
         
         .container {
@@ -417,7 +474,7 @@ export default function Home() {
         }
         
         .hero .container .searchbox {
-          background: rgba(0, 0, 0, 0.6);
+         
           border-radius: 5px;
           width: 80%;
           height: 50%;
@@ -663,6 +720,7 @@ export default function Home() {
         }
         
         .section-c {
+          margin-top: 50px;
           width: 100%;
           height: 500px;
           display: -ms-grid;

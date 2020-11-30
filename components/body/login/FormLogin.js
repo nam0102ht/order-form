@@ -11,7 +11,6 @@ import { Button,
 } from "@material-ui/core"
 import styled from "styled-components"
 import React, { useCallback, useEffect, useState } from "react"
-import callAuthenticate from "../../../utils/connect"
 import { Visibility, VisibilityOff } from "@material-ui/icons"
 import CloseIcon from '@material-ui/icons/Close'
 import { useRouter } from "next/router"
@@ -57,12 +56,7 @@ const FadeCustom = styled(Fade)`
     left: 0px;
     z-index: 999;
 `
-async function getInitialProps(ctx){
-	if (!process.browser) {
-    }
-	return {}
-}
-export default function FormLogin({initialLoginStatus }) {
+export default function FormLogin({initialLoginStatus}) {
     const router = useRouter()
     const [userLogin, setUserLogin] = useState({})
     const [values, setValues] = React.useState({
@@ -73,25 +67,13 @@ export default function FormLogin({initialLoginStatus }) {
     const [isShow, setIsShow] = useState(false)
     const [closeAlert, setCloseAlert] = useState(true)
     const [loginStatus, setLoginStatus] = useState(initialLoginStatus || 'Loading...')
-
-    async function getLoginStatus() {
-		setLoginStatus('Loading...')
-
-		try {
-			const { email } = await axios.get('/api/proxy/me').then((response) => response.data)
-
-			setLoginStatus(`Logged in as ${email}`)
-		} catch (err) {
-			setLoginStatus('Not logged in')
-		}
-	}
-
-
-    useEffect(() => {
-		if (!initialLoginStatus) {
-			getLoginStatus()
-		}
-	}, [initialLoginStatus])
+    
+    useEffect(async () => {
+        const data = await axios.get('/api/me')
+        if(data.data.user) {
+            router.push('/')
+        }
+    })
 
     const onChangeHandle = useCallback((event) => {
         let user = userLogin
@@ -120,14 +102,14 @@ export default function FormLogin({initialLoginStatus }) {
         })
         if(user.data.status !== 200) {
             setMessRes(user.data.message)
-            setServity('warning')
+            setServity('error')
             setIsShow(true)
             return
         }
-        // router.push("/")
         setMessRes("User login success")
         setServity('success')
         setIsShow(true)
+        router.push("/")
     }, [userLogin, servity, messRes, setServity, setMessRes])
 
     return (<PaperCustom>
@@ -190,4 +172,11 @@ export default function FormLogin({initialLoginStatus }) {
                     </FadeCustom> : <></>}
     </PaperCustom>)
 }
-FormLogin.getInitialProps = getInitialProps
+FormLogin.getInitialProps = async (ctx) => {
+    console.log(ctx)
+    let initialLoginStatus =  true
+    const data = await axios.get('/api/me')
+    console.log(data.data)
+    if(data.data.status === 200) initialLoginStatus = false
+    return {}
+}

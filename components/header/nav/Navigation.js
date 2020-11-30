@@ -79,70 +79,39 @@ const PaperCustom = styled(Paper)`
     font-weight: 800;
 `
 
-export default function Navigation({...props}) {
+export default function Navigation({ ...props }) {
 
     const [tranform, setTransform] = useState(false);
-    const [user, setUser] = useState()
-
-    useEffect(() => {
-        // let cookies = new Cookies()
-        // let token = cookies.get("token") || ""
-        // let user = localStorage.getItem("user")
-
-        // if(user || token) {
-        //     let userDecode = checkExpireIn(token)
-        //     let date = new Date()
-        //     if(date.getTime() > userDecode.exp*1000) {
-        //         console.log(user)
-        //         return
-        //     }
-        //     console.log("login")
-        // }
-        // request.setKey(""+new Date().getTime())
-        // request.setProductid("1")
-        // request.setName("Top Clothes")
-        // request.setAmount(180000)
-        // request.setNumber(1)
-        // request.setToken(token)
-
-        // console.log(client.order)
-    
-        // orderFormService.order(request, {}, (err, response) => {
-        //     console.log(response)
-        // })
-
-    })
-
     useEffect(() => {
         if (typeof window !== 'undefined') {
             let prevScrollpos = window.pageYOffset;
             window.onscroll = function () {
-              const maxScroll = document.body.clientHeight - window.innerHeight;
-              let currentScrollPos = window.pageYOffset;
-              if (
-                  (maxScroll > 0 && prevScrollpos > currentScrollPos && prevScrollpos <= maxScroll) 
-                || (maxScroll <= 0 && prevScrollpos > currentScrollPos)
-                || (prevScrollpos <= 0 && currentScrollPos <= 0)
+                const maxScroll = document.body.clientHeight - window.innerHeight;
+                let currentScrollPos = window.pageYOffset;
+                if (
+                    (maxScroll > 0 && prevScrollpos > currentScrollPos && prevScrollpos <= maxScroll)
+                    || (maxScroll <= 0 && prevScrollpos > currentScrollPos)
+                    || (prevScrollpos <= 0 && currentScrollPos <= 0)
                 ) {
-                document.getElementById("navbar").style.top = "0"
-              } else {
-                setTransform(true);
-                document.getElementById("navbar").style.top = "-5rem"; // adjustable based your need
-              }
-              if(currentScrollPos <= 50) setTransform(false);
-              prevScrollpos = currentScrollPos;
+                    document.getElementById("navbar").style.top = "0"
+                } else {
+                    setTransform(true);
+                    document.getElementById("navbar").style.top = "-5rem"; // adjustable based your need
+                }
+                if (currentScrollPos <= 50) setTransform(false);
+                prevScrollpos = currentScrollPos;
             }
-          }
+        }
     });
 
     return <header>
-        <Nav id="navbar" navProps={{height: props.height, backgroundColor: props.backgroundColor}}>
+        <Nav id="navbar" navProps={{ height: props.height, backgroundColor: props.backgroundColor }}>
             <IconCenter>
                 <ElementIconCenter> </ElementIconCenter>
                 <ElementIconCenter>
                     <IconLogo><SpanCustom>TING TING SHOP</SpanCustom></IconLogo>
                 </ElementIconCenter>
-                <ElementIconCenter><ListIconMenu /></ElementIconCenter>
+                <ElementIconCenter><ListIconMenu username={props.user.username} status={props.show} /></ElementIconCenter>
             </IconCenter>
             <NavTag>
                 {
@@ -152,23 +121,24 @@ export default function Navigation({...props}) {
                         </PaperCustom>
                     </NavIcon> : <></>
                 }
-                <CollapseMenu 
-                    id="aoNam" 
-                    name="aoNam" 
-                    content="Top"
+                <CollapseMenu
+                    id="aoNam"
+                    name="aoNam"
+                    content="Vietnamese Cuisine"
                 />
-                <CollapseMenu 
-                    id="quanNam" 
-                    name="quanNam" 
-                    content="Bottom"/>
-                <CollapseMenu 
-                    id="shoes" 
-                    name="shoes" 
-                    content="Shoes"/>
-                <CollapseMenu 
-                    id="accessories" 
-                    name="accessories" 
-                    content="Accessories"/>
+                <CollapseMenu
+                    id="quanNam"
+                    name="quanNam"
+                    content="
+                    Chinese Cuisine" />
+                <CollapseMenu
+                    id="shoes"
+                    name="shoes"
+                    content="Japanese Cuisine" />
+                <CollapseMenu
+                    id="accessories"
+                    name="accessories"
+                    content="Korean Cuisine" />
             </NavTag>
         </Nav>
     </header>
