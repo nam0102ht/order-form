@@ -72,6 +72,13 @@ export default function FormRegister() {
     const [isShow, setIsShow] = useState(false)
     const [closeAlert, setCloseAlert] = useState(true)
 
+    useEffect(async () => {
+        const data = await axios.get('/api/me')
+        if(data.data.user) {
+            router.push('/')
+        }
+    })
+
     const onChangeHandle = useCallback((event) => {
         let user = userForm
         const {name, value} = event.target
