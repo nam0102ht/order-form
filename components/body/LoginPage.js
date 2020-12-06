@@ -1,5 +1,5 @@
 import { Grid, makeStyles } from "@material-ui/core"
-import React from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import styled from "styled-components"
 import FormLogin from "./login/FormLogin"
 
@@ -12,6 +12,35 @@ const useStyles = makeStyles({
 
 export default function LoginPage() {
     const classes = useStyles();
+    const [userLogin, setUserLogin] = useState({})
+
+    const [userStatus, setUserStatus] = useState({
+        username: false,
+        password: false
+    })
+
+    const onChangeHandle = useCallback((event) => {
+        let user = userLogin
+        const {name, value} = event.target
+        user[name] = value.replace(/([.?*+;^$[\]\\(){}|-])/g, "\\$1")
+        setUserLogin(user)
+    }, [userLogin, setUserLogin])
+
+    const handleOnBlur = useCallback((event) => {
+        const {name} = event.target
+        const status = userStatus
+        const user = userLogin
+        if(name === "username") {
+            if(!user.username)
+                status.username = true
+            else status.username = false
+        } else if (name === "password") {
+            if(!user.password)
+                status.password = true
+            else status.password = false
+        }
+        setUserStatus(status)
+    }, [userLogin, userStatus, setUserStatus])
 
     return <Grid className={classes.girdForm} container spacing={2}>
         <Grid item xs={6}>
@@ -21,7 +50,13 @@ export default function LoginPage() {
         </Grid>
         <Grid item xs={6}>
             <div className="pattern-diagonal-lines-sm">
-                <FormLogin />
+                {console.log(userStatus.username)}
+                <FormLogin
+                    userLogin={userLogin}
+                    userStatus={userStatus}
+                    onChangeHandle={onChangeHandle}
+                    handleOnBlur={handleOnBlur}
+                />
             </div>
         </Grid>
         <style jsx>{`

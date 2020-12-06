@@ -1,6 +1,7 @@
 import { Button, 
     Fade, 
     FormControl,
+    FormHelperText,
     IconButton, 
     Input, 
     InputAdornment, 
@@ -56,9 +57,11 @@ const FadeCustom = styled(Fade)`
     left: 0px;
     z-index: 999;
 `
-export default function FormLogin({initialLoginStatus}) {
+const FormUserNameError = styled(FormControl)`
+    width: 100%;
+`
+export default function FormLogin({...props}) {
     const router = useRouter()
-    const [userLogin, setUserLogin] = useState({})
     const [values, setValues] = React.useState({
         showPassword: false,
     });
@@ -66,7 +69,6 @@ export default function FormLogin({initialLoginStatus}) {
     const [messRes, setMessRes] = useState()
     const [isShow, setIsShow] = useState(false)
     const [closeAlert, setCloseAlert] = useState(true)
-    const [loginStatus, setLoginStatus] = useState(initialLoginStatus || 'Loading...')
     
     useEffect(async () => {
         const data = await axios.get('/api/me')
@@ -74,13 +76,6 @@ export default function FormLogin({initialLoginStatus}) {
             router.push('/')
         }
     })
-
-    const onChangeHandle = useCallback((event) => {
-        let user = userLogin
-        const {name, value} = event.target
-        user[name] = value.replace(/([.?*+;^$[\]\\(){}|-])/g, "\\$1")
-        setUserLogin(user)
-    }, [userLogin, setUserLogin])
 
     const handleClickShowPassword = () => {
         setValues({ showPassword: !values.showPassword });
@@ -98,7 +93,7 @@ export default function FormLogin({initialLoginStatus}) {
             headers: { 
                 'Content-Type': 'application/json'
             },
-            data : JSON.stringify(userLogin)
+            data : JSON.stringify(props.userLogin)
         })
         if(user.data.status !== 200) {
             setMessRes(user.data.message)
@@ -110,28 +105,42 @@ export default function FormLogin({initialLoginStatus}) {
         setServity('success')
         setIsShow(true)
         router.push("/")
-    }, [userLogin, servity, messRes, setServity, setMessRes])
+    }, [props.userLogin, servity, messRes, setServity, setMessRes])
 
     return (<PaperCustom>
         <FormLoginCustom>
-            <TextStyle
-                name="username"
-                label="Username:"
-                multiline
-                placeholder="Username"
-                rowsMax={4}
-                value={userLogin.username}
-                onChange={onChangeHandle}
-            />
+            {!props.userStatus.username ?
+                <TextStyle
+                    name="username"
+                    label="Username:"
+                    multiline
+                    placeholder="Username"
+                    rowsMax={4}
+                    value={props.userLogin.username}
+                    onChange={props.onChangeHandle}
+                    onBlur={props.handleOnBlur}
+                /> : <FormUserNameError error>
+                    <InputLabel htmlFor="component-error">Username</InputLabel>
+                    <Input
+                    id="component-error"
+                    value={props.userLogin.username}
+                    onChange={props.onChangeHandle}
+                    aria-describedby="component-error-text"
+                    />
+                    <FormHelperText id="component-error-text">Username is require</FormHelperText>
+                </FormUserNameError>
+            }
             <FormControlCustom>
                 <InputLabel htmlFor="standard-adornment-password">Password:</InputLabel>
                 <InputCustom
+                    error={props.userStatus.password}
                     id="standard-adornment-password"
                     type={values.showPassword ? 'text' : 'password'}
-                    value={userLogin.password}
+                    value={props.userLogin.password}
                     name="password"
-                    onChange={onChangeHandle}
+                    onChange={props.onChangeHandle}
                     rowsMax={4}
+                    onBlur={props.handleOnBlur}
                     endAdornment={
                     <InputAdornment position="end">
                         <IconButton
@@ -172,11 +181,11 @@ export default function FormLogin({initialLoginStatus}) {
                     </FadeCustom> : <></>}
     </PaperCustom>)
 }
-FormLogin.getInitialProps = async (ctx) => {
-    console.log(ctx)
-    let initialLoginStatus =  true
-    const data = await axios.get('/api/me')
-    console.log(data.data)
-    if(data.data.status === 200) initialLoginStatus = false
-    return {}
-}
+// FormLogin.getInitialProps = async (ctx) => {
+//     console.log(ctx)
+//     let initialLoginStatus =  true
+//     const data = await axios.get('/api/me')
+//     console.log(data.data)
+//     if(data.data.status === 200) initialLoginStatus = false
+//     return {}
+// }

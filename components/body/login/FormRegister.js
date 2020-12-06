@@ -242,7 +242,6 @@ export default function FormRegister() {
             />
             <Link href="/login">If account is registered, please login</Link>
             <ButtonCustom
-                disabled={!showButton}
                 onClick={onClickHandle}>Register
             </ButtonCustom>
         </FormLoginCustom>
